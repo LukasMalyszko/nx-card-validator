@@ -1,0 +1,41 @@
+/// Main Styles File
+/// Here we import all the global Styles files we need for our project.
+
+@use "styles/normalize.scss";
+@use "styles/root.scss";
+@use "styles/fonts.scss";
+
+body, html {
+  height: 100%;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--on-background-color);
+  background-color: var(--canvas-color);
+}
+
+.img-container {
+  display: flex;
+  width: fit-content;
+  height: fit-content;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  &.img--cover {
+    object-fit: cover;
+  }
+}
+
+a {
+  color: var(--on-background-color);
+  transition: .2s;
+
+  &:hover {
+    color: var(--primary-color);
+  }
+}

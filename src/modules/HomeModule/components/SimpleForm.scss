@@ -1,0 +1,170 @@
+.form-page {
+  display: flex;
+  align-items: center;
+
+  & &__form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 64px;
+  }
+
+  & &__text {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 40px;
+    max-width: 233px;
+    padding-bottom: 40px;
+  }
+
+  & &__img-container {
+    flex-shrink: 2;
+    max-width: 872px;
+    img {
+      object-fit: cover;
+      object-position: center center;
+    }
+  }
+
+  @media (max-width: 1020px) {
+    flex-direction: column-reverse;
+
+    & &__form-container {
+      align-items: center;
+      text-align: center;
+      max-width: 440px;
+      padding: 116px 0;
+    }
+
+    & &__img-container {
+      max-width: max-content;
+    }
+  }
+
+  @media (max-width: 460px) {
+    & &__form-container {
+      align-items: flex-start;
+      padding: 36px 16px;
+    }
+
+    & &__text {
+      font-size: 24px;
+      line-height: 24px;
+      letter-spacing: -0.03em;
+      padding-bottom: 32px;
+      text-align: left;
+    }
+  }
+}
+
+.simple-form {
+  & &__input {
+    background-color: transparent;
+    border: 1px solid var(--border-color-light);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 18px;
+    margin-bottom: 14px;
+    padding: 19px 32px;
+    width: 100%;
+
+    &:read-write {
+      color: var(--color-white-100);
+    }
+
+    &:focus-visible {
+      border-color: var(--border-color-light);
+    }
+
+    &[name="expiryDate"] {
+      width: 100%;
+    }
+
+    &[name="CVV"] {
+      max-width: 165px;
+      width: 100%;
+    }
+  }
+
+  & &__flex-container {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  & &__button {
+    display: flex;
+    background-color: var(--primary-color-dark);
+    border: none;
+    border-radius: 60px;
+    color: var(--color-white-100);
+    height: 56px;
+    transition: 0.2s;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+
+    &[disabled] {
+      background-color: var(--color-black-800);
+      color: var(--color-white-900);
+      &:hover {
+        background-color: var(--color-black-800);
+        cursor: not-allowed;
+      }
+    }
+
+    &:hover {
+      background-color: var(--background-color-primary-hover);
+      cursor: pointer;
+    }
+
+    .loader {
+      max-width: 42px;
+    }
+
+    &[data-loader="0"] {
+      .text {
+        display: block;
+      }
+
+      .loader {
+        display: none;
+      }
+    }
+
+    &[data-loader="1"] {
+      .text {
+        display: none;
+      }
+
+      .loader {
+        display: block;
+      }
+    }
+  }
+
+  @media (max-width: 1020px) {
+    & &__input {
+      margin-bottom: 12px;
+    }
+
+    & &__flex-container {
+      margin-bottom: 10px;
+    }
+  }
+
+  @media (max-width: 460px) {
+    & &__flex-container {
+      margin-bottom: 14px;
+    }
+
+    & &__input {
+      &[name="CVV"] {
+        max-width: 120px;
+      }
+    }
+  }
+}
