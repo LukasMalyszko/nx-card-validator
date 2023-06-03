@@ -95,6 +95,12 @@
     margin-bottom: 18px;
   }
 
+  & &__error-message {
+    color: var(--color-red-700);
+    text-align: center;
+    margin: 0 0 5px;
+  }
+
   & &__button {
     display: flex;
     background-color: var(--primary-color-dark);

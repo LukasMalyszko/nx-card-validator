@@ -2,17 +2,18 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 interface Props {
-  src?: string;
+  src?:{[key: string]: string;
+  }
 }
 
-export const ImageComponent: React.FC<Props> = () => {
+export const ImageComponent: React.FC<Props> = ({src}) => {
   const [imageSrc, setImageSrc] = useState("/nx logo.png");
 
   useEffect(() => {
     const handleWindowResize = () => {
-      const desktopImage = "/nx logo.png";
-      const tabletImage = "/tab nx logo.png";
-      const mobileImage = "/mob nx logo.png";
+      const desktopImage = src?.desktopImage;
+      const tabletImage = src?.tabletImage;
+      const mobileImage = src?.mobileImage;
       const screenSize = window.innerWidth;
 
       let newSrc = desktopImage;
@@ -22,7 +23,7 @@ export const ImageComponent: React.FC<Props> = () => {
         newSrc = tabletImage;
       }
 
-      setImageSrc(newSrc);
+      setImageSrc(newSrc || "");
     };
     ///  nasłuchiwanie na zdarzenie resize przy montowaniu komponentu
     ///

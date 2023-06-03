@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useMemo } from "react";
-import { ImageComponent } from "./ImageComponent";
+import { ImageComponent } from "../../../global-components/ImageComponent";
 import "./SimpleForm.scss";
 
 interface IForm {
@@ -15,6 +15,8 @@ interface Props {
 }
 
 export const SimpleForm: React.FC<Props> = () => {
+  const [dataLoading, setDataLoading] = useState<number>(0);
+
   const [form, setForm] = useState<IForm>({
     fullName: {
       value: "",
@@ -51,7 +53,7 @@ export const SimpleForm: React.FC<Props> = () => {
   );
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const target = event.target;
+    const { target } = event;
     const value = target.value;
     const name = target.name;
     const validator = basicValidator[name];
@@ -90,8 +92,13 @@ export const SimpleForm: React.FC<Props> = () => {
   };
 
   const handleLoader = () => {
-    const button = document.querySelector(".simple-form__button");
-    button?.setAttribute("data-loader", "1");
+    setDataLoading(1);
+  };
+
+  const srcObj = {
+    desktopImage: "nx logo.png",
+    tabletImage: "tab nx logo.png",
+    mobileImage: "mob nx logo.png",
   };
 
   return (
@@ -140,7 +147,7 @@ export const SimpleForm: React.FC<Props> = () => {
               placeholder="Expiry date (MM/YY)"
               onChange={handleFormChange}
             />
-            
+
             <input
               className="simple-form__input"
               type="text"
@@ -151,21 +158,20 @@ export const SimpleForm: React.FC<Props> = () => {
               placeholder="CVV"
               onChange={handleFormChange}
             />
-            
           </div>
           {form["expiryDate"].errorMessage && (
-              <p className="simple-form__error-message">
-                {form["expiryDate"].errorMessage}
-              </p>
-            )}
-            {form["CVV"].errorMessage && (
-              <p className="simple-form__error-message">
-                {form["CVV"].errorMessage}
-              </p>
-            )}
+            <p className="simple-form__error-message">
+              {form["expiryDate"].errorMessage}
+            </p>
+          )}
+          {form["CVV"].errorMessage && (
+            <p className="simple-form__error-message">
+              {form["CVV"].errorMessage}
+            </p>
+          )}
           <button
             disabled={!isFormValid}
-            data-loader="0"
+            data-loader={dataLoading}
             className="simple-form__button"
             type="submit"
             onClick={handleLoader}
@@ -178,7 +184,7 @@ export const SimpleForm: React.FC<Props> = () => {
         </form>
       </div>
       <div className="form-page__img-container">
-        <ImageComponent />
+        <ImageComponent src={srcObj} />
       </div>
     </div>
   );
