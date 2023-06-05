@@ -95,7 +95,7 @@ export const SimpleForm: React.FC<Props> = () => {
     setDataLoading(1);
   };
 
-  const srcObj = {
+  const srcImage = {
     desktopImage: "nx logo.png",
     tabletImage: "tab nx logo.png",
     mobileImage: "mob nx logo.png",
@@ -184,7 +184,7 @@ export const SimpleForm: React.FC<Props> = () => {
         </form>
       </div>
       <div className="form-page__img-container">
-        <ImageComponent src={srcObj} />
+        <ImageComponent src={srcImage} />
       </div>
     </div>
   );

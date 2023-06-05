@@ -2,11 +2,14 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 interface Props {
-  src?:{[key: string]: string;
-  }
+  src?: {
+    desktopImage?: string;
+    tabletImage?: string;
+    mobileImage?: string;
+  };
 }
 
-export const ImageComponent: React.FC<Props> = ({src}) => {
+export const ImageComponent: React.FC<Props> = ({ src }) => {
   const [imageSrc, setImageSrc] = useState("/nx logo.png");
 
   useEffect(() => {
@@ -25,15 +28,16 @@ export const ImageComponent: React.FC<Props> = ({src}) => {
 
       setImageSrc(newSrc || "");
     };
-    ///  nasłuchiwanie na zdarzenie resize przy montowaniu komponentu
-    ///
+
+    window.onload = handleWindowResize;
+
     window.addEventListener("resize", handleWindowResize);
-    /// czyszczenie nasłuchiwania przy odmontowaniu komponentu
-    ///
+
     return () => {
       window.removeEventListener("resize", handleWindowResize);
     };
-  }, []);
+  }, [src]);
+    
 
   return <img src={imageSrc} alt="netflix logo" />;
 };
