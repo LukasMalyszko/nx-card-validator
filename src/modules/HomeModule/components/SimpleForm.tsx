@@ -1,6 +1,8 @@
 import React, { useState, ReactNode, useMemo } from "react";
 import { ImageComponent } from "../../../global-components/ImageComponent";
 import "./SimpleForm.scss";
+import "./FormPage.scss";
+import { ResizableExpiryDate } from "./ResizableExpiryDate";
 
 interface IForm {
   [key: string]: {
@@ -68,10 +70,81 @@ export const SimpleForm: React.FC<Props> = () => {
         errorMessage = validatorValue;
       }
     }
-    setForm({
-      ...form,
-      [name]: { ...form[name], value, isValid, errorMessage },
-    });
+
+    if (name === "cardNumber") {
+      const cleanedValue = value.replace(/\s/g, "");
+
+      const blocks = [];
+      let i = 0;
+
+      while (i < cleanedValue.length) {
+        blocks.push(cleanedValue.slice(i, i + 4));
+        i += 4;
+      }
+
+      const formattedValue = blocks.join(" ");
+      setForm({
+        ...form,
+        [name]: { ...form[name], value: formattedValue, isValid, errorMessage },
+      });
+      target.value = formattedValue;
+    }
+
+    if (name === "expiryDate") {
+      const cleanedValue = value.replace(/\//g, "");
+
+      const blocks = [];
+      let i = 0;
+
+      while (i < cleanedValue.length) {
+        blocks.push(cleanedValue.slice(i, i + 2));
+        i += 2;
+      }
+
+      const formattedValue = blocks.join("/");
+
+      target.value = formattedValue;
+
+      /// Sprawdź, czy wartość ma poprawny format
+      ///
+      if (/^\d{2}\/\d{2}$/.test(value)) {
+        const [month, year] = value.split("/");
+        const currentMonth = new Date().getMonth() + 1;
+        const currentYear = new Date().getFullYear() % 100;
+
+        if (Number(year) >= currentYear && Number(year) <= currentYear + 5) {
+          if (Number(month) >= 1 && Number(month) <= 12) {
+
+              setForm({
+                ...form,
+                [name]: { ...form[name], value, isValid, errorMessage },
+              });
+
+          } else {
+            isValid = false;
+            errorMessage = "Expiry date is incorrect";
+          }
+        } else {
+          isValid = false;
+          errorMessage = "Expiry date is incorrect";
+        }
+      } else {
+        isValid = false;
+        errorMessage = "Expiry date is incorrect";
+      }
+
+      /// Jeśli wartość jest niepoprawna, zaktualizuj stan komponentu z błędem
+      ///
+      setForm({
+        ...form,
+        [name]: { ...form[name], value: formattedValue, isValid, errorMessage },
+      });
+    } else {
+      setForm({
+        ...form,
+        [name]: { ...form[name], value, isValid, errorMessage },
+      });
+    }
   };
 
   interface IBasicValidator {
@@ -79,18 +152,57 @@ export const SimpleForm: React.FC<Props> = () => {
   }
 
   const basicValidator: IBasicValidator = {
-    fullName: (value: string) =>
+    fullName: (value) =>
       /([A-Za-z0-9żźćńółęąśŻŹĆĄŚĘŁÓŃ]{3,} )([A-Za-z0-9żźćńółęąśŻŹĆĄŚĘŁÓŃ]{3,})/.test(
         String(value)
       ) || "Full name is incorrect",
-    cardNumber: (value: string) =>
-      /([/^\d+$/])/.test(String(value)) || "Card number is incorrect",
-    expiryDate: (value: string) =>
-      /([/^\d{2}/\d{4}$/])/.test(String(value)) || "Expiry Date is incorrect",
-    CVV: (value: string) =>
-      /([/^\d+$/])/.test(String(value)) || "CVV number is incorrect",
+
+    cardNumber: (value) => {
+      const cleanedValue = value.replace(/\D/g, "");
+
+      if (!/^\d+$/.test(cleanedValue)) {
+        return "Card number is incorrect";
+      }
+
+      if (cleanedValue.length < 13 || cleanedValue.length > 19) {
+        return "Card number is incorrect";
+      }
+
+      //Algorytm Luhna
+      //
+      const digits = cleanedValue.replace(/\s/g, "").split("").reverse();
+      let sum = 0;
+
+      for (let i = digits.length - 1; i >= 0; i--) {
+        let digit = parseInt(digits[i], 10);
+
+        if (i % 2 === 1) {
+          digit *= 2;
+          if (digit > 9) {
+            digit -= 9;
+          }
+        }
+
+        sum += digit;
+      }
+
+      if (sum % 10 !== 0) {
+        return "Card number is incorrect";
+      }
+      return true;
+    },
+
+    expiryDate: (value) => {
+      if (/^\d+$/.test(String(value))) {
+        return "Expiry Date is incorrect";
+      }
+      return true;
+    },
+
+    CVV: (value) => /^\d+$/.test(String(value)) || "CVV number is incorrect",
   };
 
+  // console.log(cardNumber)
   const handleLoader = () => {
     setDataLoading(1);
   };
@@ -107,7 +219,9 @@ export const SimpleForm: React.FC<Props> = () => {
         <div className="form-page__text">Add your informations</div>
         <form className="simple-form" onSubmit={handleSubmit}>
           <input
-            className="simple-form__input"
+            className={`simple-form__input ${
+              form.fullName.errorMessage && "error"
+            }`}
             name="fullName"
             minLength={5}
             maxLength={25}
@@ -122,13 +236,13 @@ export const SimpleForm: React.FC<Props> = () => {
             </p>
           )}
           <input
-            className="simple-form__input"
-            name="cardNumber"
-            minLength={16}
-            maxLength={16}
-            placeholder="Card number"
+            className={`simple-form__input ${
+              form.cardNumber.errorMessage && "error"
+            }`}
             required
-            type="text"
+            name="cardNumber"
+            maxLength={19}
+            placeholder="Card number"
             onChange={handleFormChange}
           />
           {form["cardNumber"].errorMessage && (
@@ -137,19 +251,18 @@ export const SimpleForm: React.FC<Props> = () => {
             </p>
           )}
           <div className="simple-form__flex-container">
-            <input
-              className="simple-form__input"
-              type="text"
-              name="expiryDate"
-              minLength={4}
-              maxLength={4}
-              required
+            <ResizableExpiryDate
+              className={`simple-form__input ${
+                form.expiryDate.errorMessage && "error"
+              }`}
               placeholder="Expiry date (MM/YY)"
               onChange={handleFormChange}
             />
 
             <input
-              className="simple-form__input"
+              className={`simple-form__input ${
+                form.CVV.errorMessage && "error"
+              }`}
               type="text"
               name="CVV"
               minLength={3}
