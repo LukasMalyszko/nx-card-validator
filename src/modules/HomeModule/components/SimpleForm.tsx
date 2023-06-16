@@ -3,14 +3,8 @@ import { ImageComponent } from "../../../global-components/ImageComponent";
 import "./SimpleForm.scss";
 import "./FormPage.scss";
 import { ResizableExpiryDate } from "./ResizableExpiryDate";
-
-interface IForm {
-  [key: string]: {
-    value: string;
-    isValid: boolean;
-    errorMessage: string;
-  };
-}
+import { FormInput } from "./FormInput";
+import { IForm } from "./Interfaces";
 
 interface Props {
   children: ReactNode;
@@ -112,17 +106,20 @@ export const SimpleForm: React.FC<Props> = () => {
         const currentMonth = new Date().getMonth() + 1;
         const currentYear = new Date().getFullYear() % 100;
 
-        if (Number(year) >= currentYear && Number(year) <= currentYear + 5) {
-          if (Number(month) >= 1 && Number(month) <= 12) {
-
+        if (Number(month) >= 1 && Number(month) <= 12) {
+          if (Number(year) >= currentYear && Number(year) <= currentYear + 5) {
+            if(Number(month) >= currentMonth){
               setForm({
                 ...form,
                 [name]: { ...form[name], value, isValid, errorMessage },
               });
-
+            }else {
+              isValid = false;
+              errorMessage = "Card has expired"
+            }
           } else {
             isValid = false;
-            errorMessage = "Expiry date is incorrect";
+            errorMessage = "Card has expired";
           }
         } else {
           isValid = false;
@@ -199,7 +196,14 @@ export const SimpleForm: React.FC<Props> = () => {
       return true;
     },
 
-    CVV: (value) => /^\d+$/.test(String(value)) || "CVV number is incorrect",
+    CVV: (value) => {
+      if(!/^\d+$/.test(String(value))){
+        return "CVV number is incorrect"
+      } else if (value.length !== 3) {
+        return "CVV must have 3 numbers"
+      }
+      return true;
+    },
   };
 
   // console.log(cardNumber)
@@ -218,38 +222,21 @@ export const SimpleForm: React.FC<Props> = () => {
       <div className="form-page__form-container">
         <div className="form-page__text">Add your informations</div>
         <form className="simple-form" onSubmit={handleSubmit}>
-          <input
-            className={`simple-form__input ${
-              form.fullName.errorMessage && "error"
-            }`}
+          <FormInput
             name="fullName"
             minLength={5}
             maxLength={25}
-            placeholder="Name on card"
-            required
-            type="text"
+            label="Name on card"
+            form={form}
             onChange={handleFormChange}
           />
-          {form["fullName"].errorMessage && (
-            <p className="simple-form__error-message">
-              {form["fullName"].errorMessage}
-            </p>
-          )}
-          <input
-            className={`simple-form__input ${
-              form.cardNumber.errorMessage && "error"
-            }`}
-            required
+          <FormInput
             name="cardNumber"
             maxLength={19}
-            placeholder="Card number"
+            label="Card number"
+            form={form}
             onChange={handleFormChange}
           />
-          {form["cardNumber"].errorMessage && (
-            <p className="simple-form__error-message">
-              {form["cardNumber"].errorMessage}
-            </p>
-          )}
           <div className="simple-form__flex-container">
             <ResizableExpiryDate
               className={`simple-form__input ${
@@ -258,30 +245,27 @@ export const SimpleForm: React.FC<Props> = () => {
               placeholder="Expiry date (MM/YY)"
               onChange={handleFormChange}
             />
-
-            <input
-              className={`simple-form__input ${
-                form.CVV.errorMessage && "error"
-              }`}
-              type="text"
+            <FormInput
               name="CVV"
               minLength={3}
               maxLength={3}
-              required
-              placeholder="CVV"
+              label="CVV"
+              form={form}
               onChange={handleFormChange}
             />
           </div>
-          {form["expiryDate"].errorMessage && (
-            <p className="simple-form__error-message">
-              {form["expiryDate"].errorMessage}
-            </p>
-          )}
-          {form["CVV"].errorMessage && (
-            <p className="simple-form__error-message">
-              {form["CVV"].errorMessage}
-            </p>
-          )}
+          <div className="flex-error-container">
+            {form["expiryDate"].errorMessage && (
+              <p className="simple-form__error-message">
+                {form["expiryDate"].errorMessage}
+              </p>
+            )}
+            {form["CVV"].errorMessage && (
+              <p className="simple-form__error-message to-right">
+                {form["CVV"].errorMessage}
+              </p>
+            )}
+          </div>
           <button
             disabled={!isFormValid}
             data-loader={dataLoading}

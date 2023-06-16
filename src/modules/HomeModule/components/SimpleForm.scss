@@ -1,4 +1,6 @@
 .simple-form {
+  width: 420px;
+
   & &__input {
     background-color: transparent;
     border: 1px solid var(--border-color-light);
@@ -10,24 +12,25 @@
     margin-bottom: 14px;
     padding: 19px 0 19px 32px;
     width: 100%;
+    color: var(--color-white-100);
+    transition: 0.2s;
 
-    &.error {
-      border-color: var(--color-red-700);
-    }
-    
     &[name="CVV"] {
       flex-shrink: 2;
     }
-    
-    &:read-write {
-      color: var(--color-white-100);
+
+    &.error {
+      border: 1px solid var(--color-red-600);
     }
-    
+
     &:focus-visible {
-      border-color: var(--border-color-light);
+      outline: 1px solid var(--border-color-light);
+    }
+
+    &:hover {
+      border-color: var(--color-black-300);
     }
   }
-  
 
   & &__flex-container {
     display: flex;
@@ -36,10 +39,19 @@
   }
 
   & &__error-message {
-    color: var(--color-red-700);
+    color: var(--color-red-600);
     text-align: left;
-    margin: -8px 0 10px 20px;
+    margin: -8px 10px 10px;
     font-size: 14px;
+  }
+
+  .flex-error-container {
+    display: flex;
+    justify-content: space-between;
+
+    .to-right {
+      text-align: end;
+    }
   }
 
   & &__button {
@@ -57,6 +69,7 @@
     &[disabled] {
       background-color: var(--color-black-800);
       color: var(--color-white-900);
+
       &:hover {
         background-color: var(--color-black-800);
         cursor: not-allowed;
@@ -108,18 +121,19 @@
       padding-left: 16px;
     }
   }
-  
+
   @media (max-width: 1020px) {
     & &__input {
       margin-bottom: 12px;
     }
   }
-  
+
   @media (max-width: 460px) {
+    width: 100%;
     & &__flex-container {
       margin-bottom: 14px;
     }
-    
+
     & &__input {
       &[name="CVV"] {
         max-width: 120px;
@@ -127,4 +141,3 @@
     }
   }
 }
-

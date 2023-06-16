@@ -17,7 +17,7 @@ export const ResizableExpiryDate: React.FC<Props> = ({ placeholder, className, o
       const input = expiryDateRef.current;
 
       if (input && width < 140) {
-        const shortenedText = "(MM/YY)";
+        const shortenedText = "Exp D (MM/YY)";
         setShortenedPlaceholder(shortenedText);
       } else {
         setShortenedPlaceholder(placeholder);
