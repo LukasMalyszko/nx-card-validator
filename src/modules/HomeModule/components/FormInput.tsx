@@ -7,7 +7,7 @@ interface FormInputProps {
   minLength?: number;
   maxLength?: number;
   form: IForm;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+onBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -16,7 +16,7 @@ export const FormInput: React.FC<FormInputProps> = ({
   minLength,
   maxLength,
   form,
-  onChange,
+  onBlur,
 }) => {
   const showError = form[name].errorMessage;
 
@@ -30,7 +30,7 @@ export const FormInput: React.FC<FormInputProps> = ({
         placeholder={label}
         required
         type="text"
-        onChange={onChange}
+        onBlur={onBlur}
       />
         {showError && name !== "CVV" && (
         <p className="simple-form__error-message">{form[name].errorMessage}</p>

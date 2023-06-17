@@ -19,12 +19,12 @@
       flex-shrink: 2;
     }
 
-    &.error {
-      border: 1px solid var(--color-red-600);
+    &:focus {
+      border: 1px solid var(--border-color-light);
     }
 
-    &:focus-visible {
-      outline: 1px solid var(--border-color-light);
+    &.error {
+      border: 1px solid var(--color-red-600);
     }
 
     &:hover {

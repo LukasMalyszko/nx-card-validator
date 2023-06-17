@@ -1,7 +1,7 @@
 import React, { useState, ReactNode, useMemo } from "react";
-import { ImageComponent } from "../../../global-components/ImageComponent";
 import "./SimpleForm.scss";
 import "./FormPage.scss";
+import { ImageComponent } from "../../../global-components/ImageComponent";
 import { ResizableExpiryDate } from "./ResizableExpiryDate";
 import { FormInput } from "./FormInput";
 import { IForm } from "./Interfaces";
@@ -66,7 +66,7 @@ export const SimpleForm: React.FC<Props> = () => {
     }
 
     if (name === "cardNumber") {
-      const cleanedValue = value.replace(/\s/g, "");
+      const cleanedValue = value.replace(/[^0-9\s]/g, "");
 
       const blocks = [];
       let i = 0;
@@ -75,7 +75,7 @@ export const SimpleForm: React.FC<Props> = () => {
         blocks.push(cleanedValue.slice(i, i + 4));
         i += 4;
       }
-
+console.log(blocks)
       const formattedValue = blocks.join(" ");
       setForm({
         ...form,
@@ -96,10 +96,10 @@ export const SimpleForm: React.FC<Props> = () => {
       }
 
       const formattedValue = blocks.join("/");
-
       target.value = formattedValue;
 
       /// Sprawdź, czy wartość ma poprawny format
+      /// z obecną datą
       ///
       if (/^\d{2}\/\d{2}$/.test(value)) {
         const [month, year] = value.split("/");
@@ -165,8 +165,8 @@ export const SimpleForm: React.FC<Props> = () => {
         return "Card number is incorrect";
       }
 
-      //Algorytm Luhna
-      //
+      /// Algorytm Luhna
+      ///
       const digits = cleanedValue.replace(/\s/g, "").split("").reverse();
       let sum = 0;
 
@@ -228,14 +228,14 @@ export const SimpleForm: React.FC<Props> = () => {
             maxLength={25}
             label="Name on card"
             form={form}
-            onChange={handleFormChange}
+            onBlur={handleFormChange}
           />
           <FormInput
             name="cardNumber"
             maxLength={19}
             label="Card number"
             form={form}
-            onChange={handleFormChange}
+            onBlur={handleFormChange}
           />
           <div className="simple-form__flex-container">
             <ResizableExpiryDate
@@ -243,7 +243,7 @@ export const SimpleForm: React.FC<Props> = () => {
                 form.expiryDate.errorMessage && "error"
               }`}
               placeholder="Expiry date (MM/YY)"
-              onChange={handleFormChange}
+              onBlur={handleFormChange}
             />
             <FormInput
               name="CVV"
@@ -251,7 +251,7 @@ export const SimpleForm: React.FC<Props> = () => {
               maxLength={3}
               label="CVV"
               form={form}
-              onChange={handleFormChange}
+              onBlur={handleFormChange}
             />
           </div>
           <div className="flex-error-container">

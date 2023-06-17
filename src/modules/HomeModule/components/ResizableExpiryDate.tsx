@@ -4,10 +4,10 @@ import ResizeObserver from "resize-observer-polyfill";
 interface Props {
   placeholder: string;
   className: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const ResizableExpiryDate: React.FC<Props> = ({ placeholder, className, onChange }) => {
+export const ResizableExpiryDate: React.FC<Props> = ({ placeholder, className, onBlur }) => {
   const expiryDateRef = useRef<HTMLInputElement>(null);
   const [shortenedPlaceholder, setShortenedPlaceholder] = useState(placeholder);
 
@@ -27,10 +27,6 @@ export const ResizableExpiryDate: React.FC<Props> = ({ placeholder, className, o
     if (expiryDateRef.current) {
       resizeObserver.observe(expiryDateRef.current);
     }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
   }, [placeholder]);
 
   return (
@@ -39,11 +35,10 @@ export const ResizableExpiryDate: React.FC<Props> = ({ placeholder, className, o
       className={className}
       type="text"
       name="expiryDate"
-      minLength={4}
       maxLength={5}
       required
       placeholder={shortenedPlaceholder}
-      onChange={onChange}
+      onBlur={onBlur}
     />
   )
 };
