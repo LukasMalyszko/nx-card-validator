@@ -5,9 +5,17 @@ interface Props {
   placeholder: string;
   className: string;
   onBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  // onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyUp: (event: any) => void;
 }
 
-export const ResizableExpiryDate: React.FC<Props> = ({ placeholder, className, onBlur }) => {
+export const ResizableExpiryDate: React.FC<Props> = ({
+  placeholder,
+  className,
+  onBlur,
+  // onChange,
+  onKeyUp,
+}) => {
   const expiryDateRef = useRef<HTMLInputElement>(null);
   const [shortenedPlaceholder, setShortenedPlaceholder] = useState(placeholder);
 
@@ -39,6 +47,8 @@ export const ResizableExpiryDate: React.FC<Props> = ({ placeholder, className, o
       required
       placeholder={shortenedPlaceholder}
       onBlur={onBlur}
+      // onChange={onChange}
+      onKeyUp={onKeyUp}
     />
-  )
+  );
 };

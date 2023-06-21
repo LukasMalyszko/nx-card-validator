@@ -1,4 +1,4 @@
-import React, { useState, ReactNode, useMemo } from "react";
+import React, { useState, ReactNode, useMemo, SyntheticEvent } from "react";
 import "./SimpleForm.scss";
 import "./FormPage.scss";
 import { ImageComponent } from "../../../global-components/ImageComponent";
@@ -48,6 +48,49 @@ export const SimpleForm: React.FC<Props> = () => {
     [form]
   );
 
+  const containLetters = (string: string) : boolean => {
+    const regex = /[a-zA-Z]/;
+
+    return regex.test(string);
+  }
+
+  const addWhitespaces = (event: any) => {
+    const value = event.target.value;
+
+    let newString = "";
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0 && (i + 1) % 5 == 0 && value.charAt(i) !== " ") {
+        newString += " ";
+      }
+
+      if ((!(value.charAt(i) == " " && (i + 1) % 5 !== 0)) && !containLetters(value.charAt(i))) {
+        newString += value.charAt(i);
+      }
+    }
+    if (newString !== value) {
+      event.target.value = newString;
+    }
+  };
+
+  const addSlash = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    let newString = "";
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0 && (i + 1) % 3 == 0 && value.charAt(i) !== "/") {
+        newString += "/";
+      }
+
+      if ((!(value.charAt(i) == "/" && (i + 1) % 3 !== 0)) && !containLetters(value.charAt(i))) {
+        newString += value.charAt(i);
+      }
+
+    }
+    if (newString !== value) {
+      event.target.value = newString;
+    }
+  };
+
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = event;
     const value = target.value;
@@ -65,42 +108,7 @@ export const SimpleForm: React.FC<Props> = () => {
       }
     }
 
-    if (name === "cardNumber") {
-      const cleanedValue = value.replace(/[^0-9\s]/g, "");
-
-      const blocks = [];
-      let i = 0;
-
-      while (i < cleanedValue.length) {
-        blocks.push(cleanedValue.slice(i, i + 4));
-        i += 4;
-      }
-console.log(blocks)
-      const formattedValue = blocks.join(" ");
-      setForm({
-        ...form,
-        [name]: { ...form[name], value: formattedValue, isValid, errorMessage },
-      });
-      target.value = formattedValue;
-    }
-
     if (name === "expiryDate") {
-      const cleanedValue = value.replace(/\//g, "");
-
-      const blocks = [];
-      let i = 0;
-
-      while (i < cleanedValue.length) {
-        blocks.push(cleanedValue.slice(i, i + 2));
-        i += 2;
-      }
-
-      const formattedValue = blocks.join("/");
-      target.value = formattedValue;
-
-      /// Sprawdź, czy wartość ma poprawny format
-      /// z obecną datą
-      ///
       if (/^\d{2}\/\d{2}$/.test(value)) {
         const [month, year] = value.split("/");
         const currentMonth = new Date().getMonth() + 1;
@@ -108,14 +116,14 @@ console.log(blocks)
 
         if (Number(month) >= 1 && Number(month) <= 12) {
           if (Number(year) >= currentYear && Number(year) <= currentYear + 5) {
-            if(Number(month) >= currentMonth){
+            if (Number(month) >= currentMonth) {
               setForm({
                 ...form,
                 [name]: { ...form[name], value, isValid, errorMessage },
               });
-            }else {
+            } else {
               isValid = false;
-              errorMessage = "Card has expired"
+              errorMessage = "Card has expired";
             }
           } else {
             isValid = false;
@@ -134,7 +142,7 @@ console.log(blocks)
       ///
       setForm({
         ...form,
-        [name]: { ...form[name], value: formattedValue, isValid, errorMessage },
+        [name]: { ...form[name], value, isValid, errorMessage },
       });
     } else {
       setForm({
@@ -197,16 +205,15 @@ console.log(blocks)
     },
 
     CVV: (value) => {
-      if(!/^\d+$/.test(String(value))){
-        return "CVV number is incorrect"
+      if (!/^\d+$/.test(String(value))) {
+        return "CVV number is incorrect";
       } else if (value.length !== 3) {
-        return "CVV must have 3 numbers"
+        return "CVV must have 3 numbers";
       }
       return true;
     },
   };
 
-  // console.log(cardNumber)
   const handleLoader = () => {
     setDataLoading(1);
   };
@@ -236,6 +243,7 @@ console.log(blocks)
             label="Card number"
             form={form}
             onBlur={handleFormChange}
+            onKeyUp={addWhitespaces}
           />
           <div className="simple-form__flex-container">
             <ResizableExpiryDate
@@ -244,6 +252,7 @@ console.log(blocks)
               }`}
               placeholder="Expiry date (MM/YY)"
               onBlur={handleFormChange}
+              onKeyUp={addSlash}
             />
             <FormInput
               name="CVV"
@@ -251,7 +260,8 @@ console.log(blocks)
               maxLength={3}
               label="CVV"
               form={form}
-              onBlur={handleFormChange}
+              onChange={handleFormChange}
+              onKeyUp={addWhitespaces}
             />
           </div>
           <div className="flex-error-container">

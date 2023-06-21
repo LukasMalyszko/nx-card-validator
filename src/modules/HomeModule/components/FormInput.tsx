@@ -7,7 +7,10 @@ interface FormInputProps {
   minLength?: number;
   maxLength?: number;
   form: IForm;
-onBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyUp?: (event: any ) => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -17,6 +20,9 @@ export const FormInput: React.FC<FormInputProps> = ({
   maxLength,
   form,
   onBlur,
+  onChange,
+  onKeyUp,
+  onKeyDown,
 }) => {
   const showError = form[name].errorMessage;
 
@@ -31,10 +37,13 @@ export const FormInput: React.FC<FormInputProps> = ({
         required
         type="text"
         onBlur={onBlur}
+        onChange={onChange}
+        onKeyUp={onKeyUp}
+        onKeyDown={onKeyDown}
       />
-        {showError && name !== "CVV" && (
+      {showError && name !== "CVV" && (
         <p className="simple-form__error-message">{form[name].errorMessage}</p>
-        )}
+      )}
     </>
   );
 };
