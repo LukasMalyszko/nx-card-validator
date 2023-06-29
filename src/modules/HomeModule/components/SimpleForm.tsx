@@ -1,6 +1,7 @@
-import React, { useState, ReactNode, useMemo, SyntheticEvent } from "react";
+import React, { useState, ReactNode, useMemo, useCallback } from "react";
 import "./SimpleForm.scss";
 import "./FormPage.scss";
+import { debounce } from "lodash";
 import { ImageComponent } from "../../../global-components/ImageComponent";
 import { ResizableExpiryDate } from "./ResizableExpiryDate";
 import { FormInput } from "./FormInput";
@@ -48,13 +49,13 @@ export const SimpleForm: React.FC<Props> = () => {
     [form]
   );
 
-  const containLetters = (string: string) : boolean => {
+  const containLetters = (string: string): boolean => {
     const regex = /[a-zA-Z]/;
 
     return regex.test(string);
-  }
+  };
 
-  const addWhitespaces = (event: any) => {
+  const addWhitespaces = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
     let newString = "";
@@ -63,7 +64,10 @@ export const SimpleForm: React.FC<Props> = () => {
         newString += " ";
       }
 
-      if ((!(value.charAt(i) == " " && (i + 1) % 5 !== 0)) && !containLetters(value.charAt(i))) {
+      if (
+        !(value.charAt(i) == " " && (i + 1) % 5 !== 0) &&
+        !containLetters(value.charAt(i))
+      ) {
         newString += value.charAt(i);
       }
     }
@@ -81,10 +85,12 @@ export const SimpleForm: React.FC<Props> = () => {
         newString += "/";
       }
 
-      if ((!(value.charAt(i) == "/" && (i + 1) % 3 !== 0)) && !containLetters(value.charAt(i))) {
+      if (
+        !(value.charAt(i) == "/" && (i + 1) % 3 !== 0) &&
+        !containLetters(value.charAt(i))
+      ) {
         newString += value.charAt(i);
       }
-
     }
     if (newString !== value) {
       event.target.value = newString;
@@ -151,6 +157,10 @@ export const SimpleForm: React.FC<Props> = () => {
       });
     }
   };
+
+  const handleDebounceFormChange = debounce((e) => {
+    handleFormChange(e);
+  }, 1000);
 
   interface IBasicValidator {
     [key: string]: (value: string) => boolean | string;
@@ -235,14 +245,14 @@ export const SimpleForm: React.FC<Props> = () => {
             maxLength={25}
             label="Name on card"
             form={form}
-            onBlur={handleFormChange}
+            onChange={handleDebounceFormChange}
           />
           <FormInput
             name="cardNumber"
             maxLength={19}
             label="Card number"
             form={form}
-            onBlur={handleFormChange}
+            onChange={handleDebounceFormChange}
             onKeyUp={addWhitespaces}
           />
           <div className="simple-form__flex-container">
@@ -251,7 +261,7 @@ export const SimpleForm: React.FC<Props> = () => {
                 form.expiryDate.errorMessage && "error"
               }`}
               placeholder="Expiry date (MM/YY)"
-              onBlur={handleFormChange}
+              onChange={handleDebounceFormChange}
               onKeyUp={addSlash}
             />
             <FormInput
@@ -260,7 +270,7 @@ export const SimpleForm: React.FC<Props> = () => {
               maxLength={3}
               label="CVV"
               form={form}
-              onChange={handleFormChange}
+              onChange={handleDebounceFormChange}
               onKeyUp={addWhitespaces}
             />
           </div>
