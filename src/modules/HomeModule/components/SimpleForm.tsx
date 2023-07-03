@@ -98,9 +98,8 @@ export const SimpleForm: React.FC<Props> = () => {
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { target } = event;
-    const value = target.value;
-    const name = target.name;
+    const { target }= event;
+    const { value, name } = target;
     const validator = basicValidator[name];
     let isValid = true;
     let errorMessage = "";
@@ -143,24 +142,32 @@ export const SimpleForm: React.FC<Props> = () => {
         isValid = false;
         errorMessage = "Expiry date is incorrect";
       }
-
-      /// Jeśli wartość jest niepoprawna, zaktualizuj stan komponentu z błędem
-      ///
-      setForm({
-        ...form,
-        [name]: { ...form[name], value, isValid, errorMessage },
-      });
-    } else {
-      setForm({
-        ...form,
-        [name]: { ...form[name], value, isValid, errorMessage },
-      });
     }
+
+      setForm((prevForm) => ({
+        ...prevForm,
+        [name]: { ...prevForm[name], value, isValid, errorMessage },
+      }));
   };
 
-  const handleDebounceFormChange = debounce((e) => {
-    handleFormChange(e);
-  }, 1000);
+  const handleDebounceFormChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { target } = event;
+    const { value, name } = target;
+    const isValid = true;
+    const errorMessage = "";
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: { ...prevForm[name], value, isValid, errorMessage },
+    }));
+
+    handleDebounce(event);
+  };
+
+  const handleDebounce = debounce((event) => {
+    handleFormChange(event);
+  }, 1500);
 
   interface IBasicValidator {
     [key: string]: (value: string) => boolean | string;
